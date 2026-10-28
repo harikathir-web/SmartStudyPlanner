@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A personal study planner and focus dashboard." />
+  <title>FocusFlow | Smart Study Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="FocusFlow home">
+        <span class="brand-mark">F</span>
+        <span>focus<span class="brand-light">flow</span></span>
+      </a>
+
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="nav-menu" aria-label="Main navigation">
+        <a class="nav-link active" href="#overview"><span class="nav-icon">▦</span> Overview</a>
+        <a class="nav-link" href="#tasks-section"><span class="nav-icon">✓</span> My tasks <span class="nav-count" id="navTaskCount">0</span></a>
+        <a class="nav-link" href="#focus-section"><span class="nav-icon">◷</span> Focus timer</a>
+        <a class="nav-link" href="#analytics-section"><span class="nav-icon">▥</span> Analytics</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="quote-card">
+          <span class="quote-icon">✦</span>
+          <p class="quote-title">Small steps every day.</p>
+          <p class="quote-copy">Consistency turns effort into progress.</p>
+        </div>
+        <div class="profile">
+          <div class="avatar">S</div>
+          <div class="profile-text"><strong>Student workspace</strong><span>Your personal planner</span></div>
+          <button class="icon-button" id="clearDataBtn" title="Clear all saved data" aria-label="Clear all saved data">⋯</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content" id="overview">
+      <header class="topbar">
+        <button class="mobile-menu icon-button" id="mobileMenuBtn" aria-label="Toggle navigation">☰</button>
+        <div>
+          <p class="eyebrow" id="todayLabel">YOUR STUDY SPACE</p>
+          <h1>Good to see you <span class="wave">✦</span></h1>
+          <p class="subtitle">Make today count, one focused session at a time.</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="today-pill"><span class="live-dot"></span><span id="dateText">Today</span></span>
+          <button class="primary-button" id="topAddTaskBtn">＋ Add task</button>
+        </div>
+      </header>
+
+      <section class="stats-grid" aria-label="Study statistics">
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-label">Tasks completed</span><span class="stat-icon violet">✓</span></div>
+          <div class="stat-value" id="completedStat">0 <small>tasks</small></div>
+          <div class="stat-foot"><span class="stat-note" id="completionRate">0% completion</span><span class="mini-track"><span id="completionMiniBar"></span></span></div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-label">Focus time today</span><span class="stat-icon peach">◷</span></div>
+          <div class="stat-value" id="focusStat">0 <small>min</small></div>
+          <div class="stat-foot"><span class="stat-note">Keep your momentum</span><span class="stat-emoji">✦</span></div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-label">Tasks remaining</span><span class="stat-icon blue">↗</span></div>
+          <div class="stat-value" id="remainingStat">0 <small>tasks</small></div>
+          <div class="stat-foot"><span class="stat-note" id="dueTodayNote">No tasks due today</span><span class="stat-emoji">◌</span></div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-label">Focus sessions</span><span class="stat-icon green">◎</span></div>
+          <div class="stat-value" id="sessionsStat">0 <small>sessions</small></div>
+          <div class="stat-foot"><span class="stat-note">Every session matters</span><span class="stat-emoji">✧</span></div>
+        </article>
+      </section>
+
+      <div class="content-grid">
+        <section class="panel tasks-panel" id="tasks-section">
+          <div class="panel-heading">
+            <div><p class="eyebrow">STAY ON TRACK</p><h2>My study tasks</h2></div>
+            <button class="text-button" id="addTaskBtn">＋ New task</button>
+          </div>
+          <div class="task-toolbar">
+            <label class="search-box"><span>⌕</span><input type="search" id="searchInput" placeholder="Search tasks..." aria-label="Search tasks"></label>
+            <select id="filterSelect" aria-label="Filter tasks">
+              <option value="all">All tasks</option>
+              <option value="active">In progress</option>
+              <option value="completed">Completed</option>
+              <option value="today">Due today</option>
+            </select>
+          </div>
+          <div class="task-list" id="taskList" aria-live="polite"></div>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-illustration">✎</div>
+            <h3>Your study plan starts here</h3>
+            <p>Add your first task and turn your goals into action.</p>
+            <button class="primary-button" id="emptyAddBtn">＋ Create first task</button>
+          </div>
+          <div class="panel-footer"><span id="taskSummary">0 tasks</span><button class="text-button muted" id="showAllBtn">Show all</button></div>
+        </section>
+
+        <section class="panel focus-panel" id="focus-section">
+          <div class="panel-heading">
+            <div><p class="eyebrow">DEEP WORK</p><h2>Focus session</h2></div>
+            <span class="soft-badge">Pomodoro</span>
+          </div>
+          <p class="focus-description">One thing at a time. You’ve got this.</p>
+          <div class="timer-wrap">
+            <svg class="timer-ring" viewBox="0 0 220 220" role="img" aria-label="Focus timer progress">
+              <circle class="ring-track" cx="110" cy="110" r="96"></circle>
+              <circle class="ring-progress" id="timerProgress" cx="110" cy="110" r="96"></circle>
+            </svg>
+            <div class="timer-center">
+              <span class="timer-mode" id="timerMode">FOCUS TIME</span>
+              <strong id="timerDisplay">25:00</strong>
+              <span class="timer-caption" id="timerCaption">Ready when you are</span>
+            </div>
+          </div>
+          <div class="timer-presets" role="group" aria-label="Timer duration">
+            <button class="preset active" data-minutes="25">Focus 25m</button>
+            <button class="preset" data-minutes="5">Short break 5m</button>
+            <button class="preset" data-minutes="15">Long break 15m</button>
+          </div>
+          <div class="timer-actions">
+            <button class="primary-button timer-start" id="startTimerBtn">▶ Start focus</button>
+            <button class="secondary-button" id="resetTimerBtn">↻ Reset</button>
+          </div>
+          <div class="focus-tip"><span>✦</span><p><strong>Focus tip</strong><br>Put your phone away and choose one task before you begin.</p></div>
+        </section>
+
+        <section class="panel analytics-panel" id="analytics-section">
+          <div class="panel-heading">
+            <div><p class="eyebrow">YOUR PROGRESS</p><h2>Weekly focus activity</h2></div>
+            <span class="soft-badge">Last 7 days</span>
+          </div>
+          <div class="chart-wrap"><canvas id="focusChart" aria-label="Focus minutes over the last seven days" role="img"></canvas></div>
+        </section>
+
+        <section class="panel goals-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">KEEP GOING</p><h2>Daily goal</h2></div>
+            <span class="stat-icon green">◎</span>
+          </div>
+          <div class="goal-main"><div><strong id="goalMinutesText">0 / 120</strong><span>focus minutes</span></div><div class="goal-percent" id="goalPercent">0%</div></div>
+          <div class="goal-track"><span id="goalBar"></span></div>
+          <p class="goal-message" id="goalMessage">Every minute counts. Start your first focus session!</p>
+          <div class="goal-setting">
+            <label for="dailyGoalInput">Daily goal (minutes)</label>
+            <div class="goal-input-row"><input id="dailyGoalInput" type="number" min="15" max="720" step="15" value="120"><button class="secondary-button" id="saveGoalBtn">Save goal</button></div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="footer"><span>FocusFlow · Your study journey, organized.</span><span>Made for focused minds <span class="footer-star">✦</span></span></footer>
+    </main>
+  </div>
+
+  <dialog class="task-dialog" id="taskDialog">
+    <form id="taskForm">
+      <div class="dialog-heading"><div><p class="eyebrow">PLAN YOUR PROGRESS</p><h2 id="dialogTitle">Create a study task</h2></div><button type="button" class="icon-button close-dialog" id="closeDialogBtn" aria-label="Close dialog">✕</button></div>
+      <input type="hidden" id="taskId">
+      <label class="form-field">Task title <input id="taskTitle" name="title" type="text" maxlength="100" placeholder="e.g. Revise JavaScript functions" required></label>
+      <div class="form-row">
+        <label class="form-field">Subject <input id="taskSubject" name="subject" type="text" maxlength="40" placeholder="e.g. JavaScript" required></label>
+        <label class="form-field">Priority <select id="taskPriority" name="priority"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></label>
+      </div>
+      <div class="form-row">
+        <label class="form-field">Due date <input id="taskDue" name="due" type="date" required></label>
+        <label class="form-field">Estimated time (min) <input id="taskDuration" name="duration" type="number" min="5" max="600" step="5" value="30" required></label>
+      </div>
+      <label class="form-field">Notes (optional) <textarea id="taskNotes" name="notes" rows="3" maxlength="300" placeholder="What do you want to cover?"></textarea></label>
+      <div class="dialog-actions"><button type="button" class="secondary-button" id="cancelDialogBtn">Cancel</button><button type="submit" class="primary-button" id="saveTaskBtn">Save task</button></div>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
